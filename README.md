@@ -9,19 +9,15 @@ on:
   workflow_dispatch:
     branches:
     - awsstaging
+    - awsproduction
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
-    - name: Extract branch name
-      shell: bash
-      run: echo "::set-output name=branch::$(echo ${GITHUB_REF#refs/heads/})"
-      id: extract_branch
-    - uses: mirkesx/aws-update-lambda-stack-reach@main
+    - uses: Emblematic-Group/aws-update-lambda-functions-action@main
       env:
         AWS_FOLDER: 'aws_cf_stack'
-        AWS_STACK_PREFIX: ${{ steps.extract_branch.output.branch }}
         AWS_REGION_VALUE: 'eu-north-1'
         AWS_ACCESS_KEY_ID_VALUE: ${{ secrets.AWS_ACCESS_KEY_ID_S3USER }}
         AWS_SECRET_ACCESS_KEY_VALUE: ${{ secrets.AWS_SECRET_ACCESS_KEY_S3USER }}
@@ -30,12 +26,11 @@ jobs:
 ## Example break-down
 This actions can be triggered only from the Action tab since it is a workflow_dispatch.
 
-The only branch allowed to dispatch this action is awsstaging (there will be more in the future).
+The only branch allowed to dispatch this action is awsstaging and awsproduction.
 
 ### Steps:
 - actions/checkout@v1 is used to allow the action to pull the repo
--“Extract branch name” is used to retrieve the name of the branch
-- mirkesx/aws-update-lambda-stack-reach@main runs AWS CLI/SAM commands to update the lambda functions.
+- Emblematic-Group/aws-update-lambda-functions-action@main runs AWS CLI/SAM commands to update the lambda functions.
 
 ### Env variables
 - AWS_FOLDER, which is the path to the folder in the repo where you can find the SAM templates
@@ -44,9 +39,8 @@ The only branch allowed to dispatch this action is awsstaging (there will be mor
 - AWS_ACCESS_KEY_ID_VALUE and AWS_SECRET_ACCESS_KEY_VALUE are credentials of the IAM AWS user used to login on AWS Cli
 
 
-### Third step summary
+### Second step summary
 - Checks whether the env variables are initialized
 - Confirms the stacks (s3, rds, lambda) exist
-- Deploys the S3 stack and apply the policies
 - Retrieves RDS endpoint and port and S3 bucket name then deploys the lambda stack and apply the triggers to S3. The names of s3 and rds stacks are retrieved by the AWS_STACK_PREFIX and by appending “s3” or “rds”.
 - Deletes the packages as a clean up
