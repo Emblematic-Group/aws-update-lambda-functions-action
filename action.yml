@@ -1,0 +1,9 @@
+name: 'AWS SAM Update the lambda stack'
+description: 'Update AWS SAM Stack'
+author: 'Emblematic Group'
+branding:
+  icon: 'upload-cloud'
+  color: 'orange'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
