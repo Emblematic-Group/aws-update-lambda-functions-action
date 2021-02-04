@@ -4,6 +4,8 @@ echo "JOB STARTED"
 
 set -e
 
+BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})
+
 echo "Check env variables STARTED"
 
 if [[ ! -z "$AWS_FOLDER" ]]; then
@@ -53,8 +55,13 @@ if [[ -z "$AWS_SECRET_ACCESS_KEY_VALUE" ]]; then
     exit 1
 fi
 
-if [[ -z "$AWS_REGION_VALUE" ]]; then
-    echo AWS Region invalid
+if [[ -z "$STAGING_AWS_REGION_VALUE" ]]; then
+    echo Staging AWS Region invalid
+    exit 1
+fi
+
+if [[ -z "$PRODUCTION_AWS_REGION_VALUE" ]]; then
+    echo Production AWS Region invalid
     exit 1
 fi
 
@@ -65,6 +72,22 @@ fi
 
 if [[ ! -z "$AWS_BUCKET_PREFIX" ]]; then
     AWS_BUCKET_PREFIX="--s3-prefix ${AWS_BUCKET_PREFIX}"
+fi
+
+if [[ "$BRANCH_NAME" == "awsstaging" ]]; then
+    AWS_REGION_VALUE=$STAGING_AWS_REGION_VALUE
+    echo "AWS REGION is $STAGING_AWS_REGION_VALUE"
+fi
+
+if [[ "$BRANCH_NAME" == "awsproduction" ]]; then
+    AWS_REGION_VALUE=$PRODUCTION_AWS_REGION_VALUE
+    echo "AWS REGION is $PRODUCTION_AWS_REGION_VALUE"
+fi
+
+
+if [[ -z "$AWS_REGION_VALUE" ]]; then
+    echo AWS Region invalid. Are you running this on awsstaging or awsproduction?
+    exit 1
 fi
 
 if [[ $FORCE_UPLOAD == true ]]; then
