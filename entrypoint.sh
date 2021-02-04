@@ -58,10 +58,6 @@ if [[ -z "$AWS_REGION_VALUE" ]]; then
     exit 1
 fi
 
-if [[ ! -z "$AWS_DEPLOY_BUCKET" ]]; then
-    unset $AWS_DEPLOY_BUCKET
-fi
-
 if [[ -z "$AWS_STACK_PREFIX" ]]; then
     echo "You haven't declared any AWS_STACK_PREFIX. Using the branch name instead."
     AWS_STACK_PREFIX="$(echo ${GITHUB_REF#refs/heads/})"
