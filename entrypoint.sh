@@ -4,8 +4,6 @@ echo "JOB STARTED"
 
 set -e
 
-BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})
-
 echo "Check env variables STARTED"
 
 if [[ ! -z "$AWS_FOLDER" ]]; then
@@ -130,6 +128,7 @@ output = text
 region = $AWS_REGION_VALUE" > ~/.aws/config
 
 
+BRANCH_NAME=$(echo ${GITHUB_REF#refs/heads/})
 AWS_STACK_PREFIX=$BRANCH_NAME
 STACKS3="${AWS_STACK_PREFIX}-${AWS_REGION_VALUE}-s3"
 STACKRDS="${AWS_STACK_PREFIX}-${AWS_REGION_VALUE}-rds"
@@ -229,7 +228,7 @@ aws cloudformation deploy --template-file lambdapackage.yml \
 --parameter-overrides S3StackName=$STACKS3 S3BucketName=$S3NAME S3BucketArn=$S3ARN \
 RDSStackName=$STACKRDS RDSInstanceAddress=$RDSADDRESS RDSInstancePort=$RDSPORT \
 ZcApiKey=$ZC_KEY ZcEmail=$ZC_EMAIL \
-DbInstanceName=$PGUSER DbUsername=$DB_USER DbPassword=$DB_PASSWORD \
+DbInstanceName=$PGUSER DbUsername=$PGUSER DbPassword=$PGPASSWORD \
 ReachApiKey=$REACH_KEY \
 BranchName=$AWS_STACK_PREFIX \
 $TAGS $NO_FAIL_EMPTY_CHANGESET
