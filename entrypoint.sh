@@ -175,7 +175,7 @@ CHECK_STACK_LAMBDA=$(aws cloudformation describe-stacks \
 
 if [[ -z "$CHECK_STACK_LAMBDA" ]]; then
     echo "ERROR! The Lambda Stack doesn't exist! Deploy it before updating the lambda functions!"
-    exit 1
+    #exit 1
 fi
 
 echo "Check if stack exists COMPLETED"
