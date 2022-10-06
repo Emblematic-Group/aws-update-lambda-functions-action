@@ -293,7 +293,7 @@ JSON=$(cat <<-EOF
                 }
             }
         }
-        ]
+    ]
 }
 EOF
 )
@@ -301,6 +301,43 @@ EOF
 aws s3api \
   put-bucket-notification-configuration \
   --bucket $S3NAME \
+  --notification-configuration "$JSON"
+
+
+AWSTRANSFERCOSTSARN=$(aws cloudformation describe-stacks \
+  --stack-name $STACKLAMBDA \
+  --query "Stacks[0].Outputs[?OutputKey=='awsTransferCostsTrigger'].OutputValue" \
+  --output text
+)
+
+JSON=$(cat <<-EOF
+{
+    "LambdaFunctionConfigurations": [
+        {
+            "Id": "transcodeVideo",
+            "LambdaFunctionArn": "$AWSTRANSFERCOSTSARN",
+            "Events": [
+                "s3:ObjectCreated:*"
+            ],
+            "Filter": {
+                "Key": {
+                    "FilterRules": [
+                        {
+                            "Name": "prefix",
+                            "Value": "$AWS_STACK_PREFIX/"
+                        }
+                    ]
+                }
+            }
+        }
+    ]
+}
+EOF
+)
+
+aws s3api \
+  put-bucket-notification-configuration \
+  --bucket $AWS_S3_LOGS \
   --notification-configuration "$JSON"
 
 echo "Creation s3 triggers COMPLETED"
