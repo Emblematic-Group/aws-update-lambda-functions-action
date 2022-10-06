@@ -236,7 +236,7 @@ ZcApiKey=$ZC_KEY ZcEmail=$ZC_EMAIL \
 DbInstanceName=$PGUSER DbUsername=$PGUSER DbPassword=$PGPASSWORD \
 ReachApiKey=$REACH_KEY \
 BranchName=$AWS_STACK_PREFIX \
-S3BucketLogs=$AWS_S3_LOGS \
+S3BucketLogs=arn:aws:s3:::$AWS_S3_LOGS \
 $TAGS $NO_FAIL_EMPTY_CHANGESET
 
 echo "Deploy lambda stack COMPLETED"
