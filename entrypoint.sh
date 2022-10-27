@@ -315,7 +315,7 @@ JSON=$(cat <<-EOF
 {
     "LambdaFunctionConfigurations": [
         {
-            "Id": "awsTransferCosts",
+            "Id": "awsTransferCosts$AWS_STACK_PREFIX",
             "LambdaFunctionArn": "$AWSTRANSFERCOSTSARN",
             "Events": [
                 "s3:ObjectCreated:*"
