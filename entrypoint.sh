@@ -313,7 +313,7 @@ AWSTRANSFERCOSTSARN=$(aws cloudformation describe-stacks \
 echo "Creation s3 triggers COMPLETED"
 echo "Add s3 triggers for logs STARTED"
 
-notifications=$(aws s3api get-bucket-notification-configuration --bucket $AWS_S3_LOGS)
+notifications=$(aws s3api get-bucket-notification-configuration --bucket $AWS_S3_LOGS --output json)
 echo $notifications
 
 echo "Filtering notifications.json STARTED"
