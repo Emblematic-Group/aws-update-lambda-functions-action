@@ -311,9 +311,16 @@ AWSTRANSFERCOSTSARN=$(aws cloudformation describe-stacks \
   --output text
 )
 
+aws s3api \
+    get-bucket-notification-configuration \
+    --bucket $AWS_S3_LOGS > notifications.json
+
+notifications=$(cat notifications.json)
+id=awsTransferCosts$AWS_STACK_PREFIX
+filtered_notifications=$(echo $notifications | jq --arg guard "$id" 'del(.LambdaFunctionConfigurations[] | select(.Id == $guard))')
+echo $filtered_notifications > filtered_notifications.json
+
 JSON=$(cat <<-EOF
-{
-    "LambdaFunctionConfigurations": [
         {
             "Id": "awsTransferCosts$AWS_STACK_PREFIX",
             "LambdaFunctionArn": "$AWSTRANSFERCOSTSARN",
@@ -331,15 +338,16 @@ JSON=$(cat <<-EOF
                 }
             }
         }
-    ]
-}
 EOF
 )
+echo $JSON > notification_to_add.json
+
+jq -s '.[0].LambdaFunctionConfigurations += .[1].LambdaFunctionConfigurations' preserved_notifications.json notification_to_add.json > new_notifications_configuration.json
 
 aws s3api \
   put-bucket-notification-configuration \
   --bucket $AWS_S3_LOGS \
-  --notification-configuration "$JSON"
+  --notification-configuration file://new_notifications_configuration.json
 
 echo "Creation s3 triggers COMPLETED"
 

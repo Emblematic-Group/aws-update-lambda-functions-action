@@ -36,7 +36,8 @@ RUN apk --no-cache add \
     && rm glibc-bin-${GLIBC_VER}.apk \
     && rm -rf /var/cache/apk/* \
     && apk add --update npm \
-    && apk add --update nodejs
+    && apk add --update nodejs \
+    && apk add jq
 
 ADD entrypoint.sh /entrypoint.sh
 RUN chmod 777 /entrypoint.sh
