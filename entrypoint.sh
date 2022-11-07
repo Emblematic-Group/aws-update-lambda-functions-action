@@ -348,7 +348,7 @@ echo "Adding new notification to filtered_notifications.json COMPLETED"
 aws s3api \
   put-bucket-notification-configuration \
   --bucket $AWS_S3_LOGS \
-  --notification-configuration $new_notifications_configuration
+  --notification-configuration '$new_notifications_configuration'
 
 echo "Add s3 triggers for logs COMPLETED"
 
