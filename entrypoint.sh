@@ -314,6 +314,7 @@ echo "Creation s3 triggers COMPLETED"
 echo "Add s3 triggers for logs STARTED"
 
 notifications=$(aws s3api get-bucket-notification-configuration --bucket $AWS_S3_LOGS)
+echo $notifications
 
 echo "Filtering notifications.json STARTED"
 id=awsTransferCosts$AWS_STACK_PREFIX
