@@ -316,7 +316,6 @@ echo "Add s3 triggers for logs STARTED"
 notifications=$(aws s3api get-bucket-notification-configuration --bucket $AWS_S3_LOGS)
 
 echo "Filtering notifications.json STARTED"
-notifications=$(cat notifications.json)
 id=awsTransferCosts$AWS_STACK_PREFIX
 filtered_notifications=$(echo $notifications | jq --arg guard "$id" 'del(.LambdaFunctionConfigurations[] | select(.Id == $guard))')
 echo "Filtering notifications.json COMPLETED"
