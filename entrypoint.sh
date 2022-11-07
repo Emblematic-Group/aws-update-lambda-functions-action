@@ -314,7 +314,6 @@ echo "Creation s3 triggers COMPLETED"
 echo "Add s3 triggers for logs STARTED"
 
 notifications=$(aws s3api get-bucket-notification-configuration --bucket $AWS_S3_LOGS --output json)
-echo $notifications
 
 echo "Filtering notifications.json STARTED"
 id=awsTransferCosts$AWS_STACK_PREFIX
@@ -343,12 +342,13 @@ new_notification=$(cat <<-EOF
 EOF
 )
 new_notifications_configuration=$(echo $filtered_notifications | jq --argjson new_json "$new_notification" '.LambdaFunctionConfigurations += [$new_json]')
+echo $new_notifications_configuration
 echo "Adding new notification to filtered_notifications.json COMPLETED"
 
 aws s3api \
   put-bucket-notification-configuration \
   --bucket $AWS_S3_LOGS \
-  --notification-configuration '$new_notifications_configuration'
+  --notification-configuration ${new_notifications_configuration}
 
 echo "Add s3 triggers for logs COMPLETED"
 
