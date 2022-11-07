@@ -342,7 +342,6 @@ new_notification=$(cat <<-EOF
 EOF
 )
 new_notifications_configuration=$(echo $filtered_notifications | jq --argjson new_json "$new_notification" '.LambdaFunctionConfigurations += [$new_json]')
-echo $new_notifications_configuration
 echo "Adding new notification to filtered_notifications.json COMPLETED"
 
 aws s3api \
