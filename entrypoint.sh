@@ -310,16 +310,22 @@ AWSTRANSFERCOSTSARN=$(aws cloudformation describe-stacks \
   --query "Stacks[0].Outputs[?OutputKey=='awsTransferCostsTrigger'].OutputValue" \
   --output text
 )
+echo "Creation s3 triggers COMPLETED"
+echo "Add s3 triggers for logs STARTED"
 
 aws s3api \
     get-bucket-notification-configuration \
     --bucket $AWS_S3_LOGS > notifications.json
 
+
+echo "Filtering notifications.json STARTED"
 notifications=$(cat notifications.json)
 id=awsTransferCosts$AWS_STACK_PREFIX
 filtered_notifications=$(echo $notifications | jq --arg guard "$id" 'del(.LambdaFunctionConfigurations[] | select(.Id == $guard))')
 echo $filtered_notifications > filtered_notifications.json
+echo "Filtering notifications.json COMPLETED"
 
+echo "Adding new notification STARTED"
 JSON=$(cat <<-EOF
         {
             "Id": "awsTransferCosts$AWS_STACK_PREFIX",
@@ -341,15 +347,18 @@ JSON=$(cat <<-EOF
 EOF
 )
 echo $JSON > notification_to_add.json
+echo "Adding new notification COMPLETED"
 
+echo "Adding new notification to filtered_notifications.json STARTED"
 jq -s '.[0].LambdaFunctionConfigurations += .[1].LambdaFunctionConfigurations' preserved_notifications.json notification_to_add.json > new_notifications_configuration.json
 
 aws s3api \
   put-bucket-notification-configuration \
   --bucket $AWS_S3_LOGS \
   --notification-configuration file://new_notifications_configuration.json
+echo "Adding new notification to filtered_notifications.json COMPLETED"
 
-echo "Creation s3 triggers COMPLETED"
+echo "Add s3 triggers for logs COMPLETED"
 
 #CLEAN PACKAGES
 echo "Clean packages STARTED"
